@@ -1,0 +1,210 @@
+CREATE DATABASE DORMITORIES;
+USE DORMITORIES;
+
+CREATE TABLE IF NOT EXISTS   Family_status (
+	id_Family_status INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	Name VARCHAR(40) NOT NULL );
+
+CREATE TABLE IF NOT EXISTS  Status_university (
+	id_Status_university INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	Name VARCHAR(40) NOT NULL );
+
+CREATE TABLE IF NOT EXISTS  Status_dormitory(    
+	id_Status_dormitory INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,    
+	Name VARCHAR(40) NOT NULL);
+
+CREATE TABLE IF NOT EXISTS Gender  (    
+	id_Gender INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,    
+	Name VARCHAR(7) NOT NULL);
+
+CREATE TABLE IF NOT EXISTS Address  (    
+	id_Address INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,    
+	Name VARCHAR(132) NOT NULL);
+
+CREATE TABLE IF NOT EXISTS Country(
+	id_Country INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	Name VARCHAR(56) NOT NULL);
+
+CREATE TABLE IF NOT EXISTS Student  (
+	id_Student INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    	id_Family_status INT UNSIGNED NOT NULL,
+	id_Gender INT UNSIGNED NOT NULL,
+	id_CitizenShip INT UNSIGNED NULL,
+    	Name VARCHAR(20) NOT NULL,
+    	Surname VARCHAR(20) NOT NULL,
+    	Patronymic VARCHAR(17) NULL,
+    	Region_of_birth VARCHAR(56) NOT NULL,
+    	Constant_registration VARCHAR(132) NULL,
+    	Date_of_birth DATE NOT NULL,
+    	FOREIGN KEY (id_Family_status) REFERENCES Family_status(id_Family_status)
+		ON DELETE RESTRICT
+		ON UPDATE CASCADE,
+	FOREIGN KEY (id_Gender) REFERENCES Gender(id_Gender)
+		ON DELETE RESTRICT
+		ON UPDATE CASCADE,
+	FOREIGN KEY (id_Citizenship) REFERENCES Country(id_Country)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS Commandant  (
+    	id_Commandant INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    	id_Family_status INT UNSIGNED NOT NULL,
+	id_Gender INT UNSIGNED NOT NULL,
+	id_CitizenShip INT UNSIGNED NULL,
+    	Name VARCHAR(20) NOT NULL,
+    	Surname VARCHAR(20) NOT NULL,
+    	Patronymic VARCHAR(17) NULL,
+   	Region_of_birth VARCHAR(56) NOT NULL,
+    	Salary INT UNSIGNED NOT NULL,
+    	Period_of_Work FLOAT NOT NULL,
+	Date_of_birth DATE NOT NULL,
+    	FOREIGN KEY (id_Family_status) REFERENCES Family_status(id_Family_status)
+		ON DELETE RESTRICT
+		ON UPDATE CASCADE,
+	FOREIGN KEY (id_Gender) REFERENCES Gender(id_Gender)
+		ON DELETE RESTRICT
+		ON UPDATE CASCADE,
+	FOREIGN KEY (id_Citizenship) REFERENCES Country(id_Country)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS Dormitory  (
+    id_Dormitory INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    id_Address INT UNSIGNED NOT NULL,
+    Name VARCHAR(16) NOT NULL,
+    Number INT UNSIGNED NOT NULL,
+    Year_of_building YEAR NOT NULL,
+    Time_necessary_to_reach_university TIME NOT NULL,
+    FOREIGN KEY (id_Address) REFERENCES Address(id_Address)
+	ON DELETE RESTRICT
+	ON UPDATE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS Paid_amount  (
+    	id_Paid_amount INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    	id_Commandant INT UNSIGNED NULL,
+    	id_Student INT UNSIGNED NOT NULL,
+    	Bank VARCHAR(95) NOT NULL,
+    	Account_number CHAR(20) NOT NULL,
+    	Amount INT UNSIGNED NOT NULL,
+   	Date_payment DATE NOT NULL,
+    	FOREIGN KEY (id_Commandant) REFERENCES Commandant(id_Commandant)
+		ON DELETE RESTRICT
+		ON UPDATE CASCADE,
+   	FOREIGN KEY (id_Student) REFERENCES Student(id_Student)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE
+);
+
+
+CREATE TABLE IF NOT EXISTS Area   (
+    id_Area INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    id_Dormitory INT UNSIGNED NOT NULL,
+    id_Student INT UNSIGNED NULL,
+    Number INT UNSIGNED NOT NULL,
+    Floor TINYINT NOT NULL,
+    Date_of_a_last_checking DATE NOT NULL,
+    FOREIGN KEY (id_Dormitory) REFERENCES Dormitory(id_Dormitory)
+	ON DELETE CASCADE
+	ON UPDATE CASCADE,
+    FOREIGN KEY (id_Student) REFERENCES Student(id_Student)
+	ON DELETE SET NULL
+	ON UPDATE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS Registration  (
+    id_Student INT UNSIGNED NOT NULL,
+    id_Address INT UNSIGNED NOT NULL,
+    Start_date DATE NOT NULL,
+    FOREIGN KEY (id_Student) REFERENCES Student(id_Student)
+	ON DELETE CASCADE
+	ON UPDATE CASCADE,
+    FOREIGN KEY (id_Address) REFERENCES Address(id_Address)
+	ON DELETE RESTRICT
+	ON UPDATE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS Student_Status  (
+    id_Student INT UNSIGNED NOT NULL,
+    id_Status_university INT UNSIGNED NOT NULL,
+    id_Status_dormitory INT UNSIGNED NULL,
+    Start_date DATE NOT NULL,
+    End_date DATE NULL,
+    FOREIGN KEY (id_Student) REFERENCES student(id_student)
+	ON DELETE CASCADE
+	ON UPDATE CASCADE,
+    FOREIGN KEY (id_Status_university) REFERENCES Status_university(id_Status_university)
+	ON DELETE RESTRICT
+	ON UPDATE CASCADE,
+    FOREIGN KEY (id_Status_dormitory) REFERENCES Status_dormitory(id_Status_dormitory)
+	ON DELETE RESTRICT
+	ON UPDATE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS Room  (
+    id_Room INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    id_Area INT UNSIGNED NOT NULL,
+    Price_for_a_day INT UNSIGNED NOT NULL,
+    Number INT UNSIGNED NOT NULL,
+    Amount_of_places TINYINT NOT NULL,
+    Presence_of_a_balcony BOOL NOT NULL,
+    FOREIGN KEY (id_Area) REFERENCES Area(id_Area)
+	ON DELETE CASCADE
+	ON UPDATE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS Kitchen  (
+    id_Kitchen INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    id_Area INT UNSIGNED NOT NULL,
+    Number INT UNSIGNED NOT NULL,
+    Date_of_a_last_checking DATE NOT NULL,
+    FOREIGN KEY (id_Area) REFERENCES Area(id_Area)
+	ON DELETE CASCADE
+	ON UPDATE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS Commandant_Area  (
+    id_Commandant INT UNSIGNED NOT NULL,
+    id_Area INT UNSIGNED NOT NULL,
+    FOREIGN KEY (id_Commandant) REFERENCES Commandant(id_Commandant)
+	ON DELETE CASCADE
+	ON UPDATE CASCADE,
+    FOREIGN KEY (id_Area) REFERENCES Area(id_Area)
+	ON DELETE CASCADE
+	ON UPDATE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS Stove  (
+    id_Stove INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    id_Kitchen INT UNSIGNED NULL,
+    Condition_of_kitchen BOOLEAN NOT NULL,
+    FOREIGN KEY (id_Kitchen) REFERENCES Kitchen(id_Kitchen)
+	ON DELETE SET NULL
+	ON UPDATE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS Living_in_room  (
+	id_Living_in_room INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	id_Room INT UNSIGNED NOT NULL,
+	id_Student INT UNSIGNED NOT NULL,
+	Date_check_in DATE NOT NULL,
+	Date_eviction DATE NULL,
+	FOREIGN KEY (id_Room) REFERENCES Room(id_Room)
+		ON DELETE RESTRICT
+		ON UPDATE CASCADE,
+	FOREIGN KEY (id_Student) REFERENCES Student(id_Student)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS Accrued_amount  (
+    	id_Accrued_amount INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    	id_Living_in_room INT UNSIGNED NOT NULL,
+    	Date DATE NOT NULL,
+    	Date_start_of_a_period DATE NOT NULL,
+    	Date_end_of_a_period DATE NOT NULL,
+	FOREIGN KEY (id_Living_in_room) REFERENCES Living_in_room(id_Living_in_room)
+		ON DELETE RESTRICT
+		ON UPDATE CASCADE
